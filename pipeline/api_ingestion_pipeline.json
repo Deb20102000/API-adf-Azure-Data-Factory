@@ -175,7 +175,10 @@
 								"scripts": [
 									{
 										"type": "Query",
-										"text": "@concat(\n'INSERT INTO dbo.pipeline_audit_log\n(\n    run_id,\n    pipeline_id,\n    source_name,\n    status,\n    record_count,\n    file_name,\n    start_time,\n    end_time,\n    error_message\n)\nVALUES\n(\n    ''', pipeline().RunId, ''',\n    ''api_ingestion_pipeline'',\n    ''', item().source_name, ''',\n    ''Success'',\n    0,\n    ''', item().source_name, '_', formatDateTime(utcNow(), 'yyyyMMdd_HHmmss'), '.json'',\n    GETDATE(),\n    GETDATE(),\n    NULL\n)'\n)"
+										"text": {
+											"value": "@concat(\n'INSERT INTO dbo.pipeline_audit_log\n(\n    run_id,\n    pipeline_id,\n    source_name,\n    status,\n    record_count,\n    file_name,\n    start_time,\n    end_time,\n    error_message\n)\nVALUES\n(\n    ''', pipeline().RunId, ''',\n    ''api_ingestion_pipeline'',\n    ''', item().source_name, ''',\n    ''Success'',\n    0,\n    ''', item().source_name, '_', formatDateTime(utcNow(), 'yyyyMMdd_HHmmss'), '.json'',\n    GETDATE(),\n    GETDATE(),\n    NULL\n)'\n)",
+											"type": "Expression"
+										}
 									}
 								],
 								"scriptBlockExecutionTimeout": "02:00:00"
