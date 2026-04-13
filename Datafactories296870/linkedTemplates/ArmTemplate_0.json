@@ -417,7 +417,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/trigger1')]",
+			"name": "[concat(parameters('factoryName'), '/Publish one')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -437,11 +437,11 @@
 					"recurrence": {
 						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2026-04-13T18:00:00",
+						"startTime": "2026-04-13T18:44:00",
 						"timeZone": "India Standard Time",
 						"schedule": {
 							"minutes": [
-								0
+								44
 							],
 							"hours": [
 								18
