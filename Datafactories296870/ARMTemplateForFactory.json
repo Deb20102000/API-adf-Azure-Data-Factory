@@ -156,6 +156,78 @@
 											}
 										}
 									]
+								},
+								{
+									"name": "updatewatermark",
+									"type": "Script",
+									"dependsOn": [
+										{
+											"activity": "Copy data1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"linkedServiceName": {
+										"referenceName": "AzureSqlDatabase1",
+										"type": "LinkedServiceReference"
+									},
+									"typeProperties": {
+										"scripts": [
+											{
+												"type": "Query",
+												"text": {
+													"value": "@concat(\n'UPDATE dbo.watermark_control\nSET last_processed_value = GETDATE(),\n    updated_date = GETDATE()\nWHERE source_name = ''',\nitem().source_name,\n''''\n)",
+													"type": "Expression"
+												}
+											}
+										],
+										"scriptBlockExecutionTimeout": "02:00:00"
+									}
+								},
+								{
+									"name": "Insert_Audit_Log",
+									"type": "Script",
+									"dependsOn": [
+										{
+											"activity": "updatewatermark",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"linkedServiceName": {
+										"referenceName": "AzureSqlDatabase1",
+										"type": "LinkedServiceReference"
+									},
+									"typeProperties": {
+										"scripts": [
+											{
+												"type": "Query",
+												"text": {
+													"value": "@concat(\n'INSERT INTO dbo.pipeline_audit_log\n(\n    run_id,\n    pipeline_id,\n    source_name,\n    status,\n    record_count,\n    file_name,\n    start_time,\n    end_time,\n    error_message\n)\nVALUES\n(\n    ''', pipeline().RunId, ''',\n    ''api_ingestion_pipeline'',\n    ''', item().source_name, ''',\n    ''Success'',\n    0,\n    ''', item().source_name, '_', formatDateTime(utcNow(), 'yyyyMMdd_HHmmss'), '.json'',\n    GETDATE(),\n    GETDATE(),\n    NULL\n)'\n)",
+													"type": "Expression"
+												}
+											}
+										],
+										"scriptBlockExecutionTimeout": "02:00:00"
+									}
 								}
 							]
 						}
@@ -169,7 +241,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/AzureSqlTable1')]",
 				"[concat(variables('factoryId'), '/datasets/RestResource1')]",
-				"[concat(variables('factoryId'), '/datasets/Json1')]"
+				"[concat(variables('factoryId'), '/datasets/Json1')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
 			]
 		},
 		{
@@ -349,7 +422,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Started",
+				"runtimeState": "Stopped",
 				"pipelines": [
 					{
 						"pipelineReference": {
